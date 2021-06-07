@@ -1,6 +1,5 @@
 import { loadAndProcessData } from './loadAndProcessData.js'
-import { plotTemperatureChart } from './plotTemperatureChart.js'
-import { plotHumidityChart } from './plotHumidityChart.js'
+import { plotLineChart } from './plotLineChart.js'
 
 const margin = ({top: 20, right: 30, bottom: 30, left: 40});
 const height = document.querySelector('#temperature-chart').offsetWidth * 2 / 3;
@@ -33,13 +32,17 @@ xRangeSelector.addEventListener('change', (event) => {
 
 const render = () => {
   console.log(data);
-  plotTemperatureChart(d3.selectAll('#temperature-chart'), {data: data,
+  plotLineChart(d3.selectAll('#temperature-chart'), {data: data,
+    xval: d => d['timestamp'],
+    yval: d => d['temperature'],
     status: status,
     width: width,
     height: height,
     margin: margin}
   );
-  plotHumidityChart(d3.selectAll('#humidity-chart'), {data: data,
+  plotLineChart(d3.selectAll('#humidity-chart'), {data: data,
+    xval: d => d['timestamp'],
+    yval: d => d['humidity'],
     status: status,
     width: width,
     height: height,

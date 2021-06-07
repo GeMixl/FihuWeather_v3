@@ -1,7 +1,9 @@
 
-export const plotTemperatureChart = (selection, props) => {
+export const plotLineChart = (selection, props) => {
   const {
     data,
+    xval,
+    yval,
     status,
     width,
     height,
@@ -17,10 +19,7 @@ export const plotTemperatureChart = (selection, props) => {
     return [xExtentStart, xExtentStop];
   };
 
-  console.log(d3.extent(data, d => d.timestamp))
-  console.log(setXExtent(d3.extent(data, d => d.timestamp), status.xStart))
-  console.log(d3.extent(data, d => d.timestamp))
-
+  const t = d3.transition().duration(1000);
 
   const yAxis = g => g
       .attr("transform", `translate(${margin.left},0)`)
@@ -31,16 +30,16 @@ export const plotTemperatureChart = (selection, props) => {
       .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
 
   const y = d3.scaleLinear()
-    .domain([d3.min(data, d => d.temperature), d3.max(data, d => d.temperature)]).nice()
+    .domain([d3.min(data, yval), d3.max(data, yval)]).nice()
       .range([height - margin.bottom, margin.top])
 
   const x = d3.scaleTime()
-    .domain(setXExtent(d3.extent(data, d => d.timestamp), status.xStart))
+    .domain(setXExtent(d3.extent(data, xval), status.xStart))
       .range([margin.left, width - margin.right])
 
   const line = d3.line()
-      .x(d => x(d.timestamp))
-      .y(d => y(d.temperature))
+      .x(d => x(xval(d)))
+      .y(d => y(yval(d)))
 
   let svg = selection.selectAll("svg").data([null])
     .join("svg")
@@ -51,18 +50,21 @@ export const plotTemperatureChart = (selection, props) => {
       .call(yAxis);
 
   svg.selectAll("#x-axis").data([null])
-    .join(enter => enter.append("g").attr("id", "x-axis"))
-      .transition().duration(1000)
-      .call(xAxis);
+    .join(enter => enter.append("g").attr("id", "x-axis").call(xAxis),
+          update => update.call(update => update.transition(t).call(xAxis)),
+          exit => exit.remove());
 
   svg.selectAll("#temp-line")
       .data([data])
-      .join(enter => enter.append("path").attr("id", "temp-line"))
-      .transition().duration(1000)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("d", line);
+      .join(enter => enter.append("path")
+                        .attr("id", "temp-line")
+                        .attr("d", line)
+                        .attr("fill", "none")
+                        .attr("stroke", "steelblue")
+                        .attr("stroke-width", 1.5)
+                        .attr("stroke-linejoin", "round")
+                        .attr("stroke-linecap", "round"),
+            update => update.call(update => update.transition(t)
+                                              .attr("d", line))
+            )
 }
