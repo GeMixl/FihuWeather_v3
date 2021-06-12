@@ -1,7 +1,7 @@
 import { loadAndProcessData } from './loadAndProcessData.js'
 import { plotLineChart } from './plotLineChart.js'
 
-const margin = ({top: 20, right: 30, bottom: 30, left: 40});
+const margin = ({top: 40, right: 40, bottom: 50, left: 50});
 const height = document.querySelector('#temperature-chart').offsetWidth * 2 / 3;
 const width = document.querySelector('#temperature-chart').offsetWidth;
 
@@ -36,17 +36,19 @@ const render = () => {
     xval: d => d['timestamp'],
     yval: d => d['temperature'],
     status: status,
-    width: width,
-    height: height,
-    margin: margin}
+    fullWidth: width,
+    fullHeight: height,
+    margin: margin,
+    yLabel: 'Temperature in °C'}
   );
   plotLineChart(d3.selectAll('#humidity-chart'), {data: data,
     xval: d => d['timestamp'],
     yval: d => d['humidity'],
     status: status,
-    width: width,
-    height: height,
-    margin: margin}
+    fullWidth: width,
+    fullHeight: height,
+    margin: margin,
+    yLabel: 'relative Humidity in %'}
   );
 };
 
