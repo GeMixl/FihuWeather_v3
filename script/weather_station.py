@@ -85,7 +85,7 @@ def ask_for_weather():
 
 if __name__ == '__main__': # on running python app.py
     dhtDevice = adafruit_dht.DHT22(board.D17)
-    schedule.every(15).minute.do(ask_for_weather)
+    schedule.every(15).minutes.do(ask_for_weather)
     while True:
         schedule.run_pending()
         time.sleep(1)
