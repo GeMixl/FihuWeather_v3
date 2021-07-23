@@ -40,14 +40,14 @@ def read_data_from_internet():
 def read_data_from_sensor():
 
     meas_count = 7
-    dht = adafruit_dht.DHT22(board.D17, use_pulseio=False)
+    dhtDevice = adafruit_dht.DHT22(board.D17)
     current_temperature = [None for i in range(meas_count)]
     current_humidiy = [None for i in range(meas_count)]
 
     for i in range(meas_count):
         try:
-            temp = dht.temperature
-            humd = dht.humidity
+            temp = dhtDevice.temperature
+            humd = dhtDevice.humidity
         except RuntimeError as error:
             # Errors happen fairly often, DHT's are hard to read, just keep going
             print(error.args[0])
