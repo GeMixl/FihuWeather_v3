@@ -40,9 +40,9 @@ def read_data_from_internet():
 def read_data_from_sensor():
 
     meas_count = 7
-    dhtDevice = adafruit_dht.DHT22(board.D17)
-    current_temperature = [null for i in range(meas_count)]
-    current_humidiy = [null for i in range(meas_count)]
+    dht = adafruit_dht.DHT22(board.D17, use_pulseio=False)
+    current_temperature = [None for i in range(meas_count)]
+    current_humidiy = [None for i in range(meas_count)]
 
     for i in range(meas_count):
         try:
@@ -75,7 +75,7 @@ def ask_for_weather():
         dht_data['rel_h'],
         owd_data['pres'])
     )
-    with TinyDB("static/db.json") as db:
+    with TinyDB("/home/pi/FihuWeather_v3/db.json") as db:
         owd_table = db.table('owd_table')
         owd_table.insert({"time": time.time(),
                           "temp": dht_data["temp"],
@@ -85,7 +85,8 @@ def ask_for_weather():
 
 if __name__ == '__main__': # on running python app.py
     dhtDevice = adafruit_dht.DHT22(board.D17)
-    schedule.every(15).minutes.do(ask_for_weather)
+   # schedule.every(15).minutes.do(ask_for_weather)
+    schedule.every().minute.do(ask_for_weather)
     while True:
         schedule.run_pending()
         time.sleep(1)
